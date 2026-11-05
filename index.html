@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rayan Cherian Jacob</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Rayan Cherian Jacob builds machines that move, sense and decide.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<style>
+/* Layout: an engineering viewport. Dark machine-shop ground, PLA-orange signal (the filament colour of his printed parts), a live 3-joint arm in the hero, and a four-layer matrix as the argument. */
+:root{
+  --bg:#0D1015; --bg2:#12161D; --surface:#171C24; --ink:#ECEFF3; --muted:#8C97A6; --line:#252D39;
+  --accent:#FF7A1A; --accent-ink:#1A0E05; --accent-soft:rgba(255,122,26,.12);
+  --lm:#FF7A1A; --le:#F4C430; --lc:#4FC3F7; --li:#B794F6;
+  --display:"Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#EEF1F4; --bg2:#E4E8ED; --surface:#FFFFFF; --ink:#0D1015; --muted:#55606E; --line:#CDD4DC;
+  --accent:#D9580A; --accent-ink:#FFFFFF; --accent-soft:rgba(217,88,10,.10);
+  --lm:#D9580A; --le:#B8860B; --lc:#0B7FB5; --li:#7C4DCC; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#EEF1F4; --bg2:#E4E8ED; --surface:#FFFFFF; --ink:#0D1015; --muted:#55606E; --line:#CDD4DC;
+  --accent:#D9580A; --accent-ink:#FFFFFF; --accent-soft:rgba(217,88,10,.10);
+  --lm:#D9580A; --le:#B8860B; --lc:#0B7FB5; --li:#7C4DCC; color-scheme:light}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body);font-stretch:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.02}
+p{margin:0}
+a{color:var(--accent)}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.eyebrow{font:500 12px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.mono{font-family:var(--mono)}
+
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:22px;padding-block:14px;overflow-x:auto;scrollbar-width:none}
+nav.top .mark{font:800 15px/1 var(--display);font-stretch:125%;letter-spacing:.06em;margin-right:auto;white-space:nowrap}
+nav.top .mark span{color:var(--accent)}
+nav.top a{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;white-space:nowrap}
+nav.top a:hover{color:var(--ink)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;background-position:-1px -1px}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 60%,transparent 0,var(--bg) 75%);pointer-events:none}
+#railArm{position:fixed;inset:0;width:100%;height:100%;z-index:15;pointer-events:none;transition:opacity .3s}
+body.editing #railArm{opacity:.18}
+.hero .wrap{position:relative;z-index:2;padding-block:88px 56px}
+.hero .wrap a,.hero .wrap button{pointer-events:auto}
+.hero h1{font-size:clamp(52px,11vw,152px);font-weight:900;font-stretch:125%;letter-spacing:-.025em;line-height:.86;text-transform:uppercase;margin-top:22px}
+.hero h1 .l2{display:block;color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+.hero .claim{margin-top:28px;font:600 clamp(24px,3.6vw,44px)/1.08 var(--display);font-stretch:85%;max-width:18ch}
+.hero .claim em{font-style:normal;color:var(--accent)}
+.hero .lede{margin-top:20px;max-width:56ch;color:var(--muted);font-size:18px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 14px/1 var(--mono);letter-spacing:.04em;padding:15px 20px;text-decoration:none;border:1px solid var(--line);color:var(--ink);background:var(--surface)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:hover{border-color:var(--accent)}
+.readout{position:absolute;right:max(52px,calc(env(safe-area-inset-right,0px) + 36px));bottom:18px;z-index:2;font:500 11px/1.6 var(--mono);color:var(--muted);text-align:right;letter-spacing:.06em;pointer-events:none}
+.readout b{color:var(--accent);font-weight:500;font-variant-numeric:tabular-nums}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);background:var(--bg2)}
+.stat{padding:26px 22px;border-left:1px solid var(--line);min-width:0}
+.stat:first-child{border-left:0}
+.stat b{display:block;font:800 clamp(34px,4.4vw,56px)/1 var(--display);font-stretch:110%;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat b small{font-size:.45em;color:var(--muted);font-weight:600}
+.stat span{display:block;margin-top:10px;font:500 12px/1.45 var(--mono);color:var(--muted);letter-spacing:.03em}
+
+section{padding-block:104px;border-bottom:1px solid var(--line)}
+.sh{display:grid;grid-template-columns:200px 1fr;gap:32px;margin-bottom:56px;align-items:start}
+.sh .num{font:500 13px/1 var(--mono);color:var(--muted);letter-spacing:.1em;padding-top:12px}
+.sh .num b{color:var(--accent);font-weight:500}
+.sh h2{font-size:clamp(40px,6.4vw,84px);font-weight:800;font-stretch:112%;letter-spacing:-.025em}
+.sh p{margin-top:20px;max-width:62ch;color:var(--muted);font-size:18px}
+
+/* layers legend */
+.layers{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:40px}
+.layer{background:var(--surface);padding:22px 20px;min-width:0}
+.layer .k{display:flex;align-items:center;gap:10px;font:700 20px/1 var(--display);font-stretch:110%}
+.layer p{margin-top:10px;font-size:14px;color:var(--muted)}
+.layer .c{margin-top:16px;font:800 44px/1 var(--display);font-variant-numeric:tabular-nums}
+.layer .c small{font:500 12px/1 var(--mono);color:var(--muted);margin-left:6px}
+.d{display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.d.on.dM{background:var(--lm);border-color:var(--lm)} .d.on.dE{background:var(--le);border-color:var(--le)}
+.d.on.dC{background:var(--lc);border-color:var(--lc)} .d.on.dI{background:var(--li);border-color:var(--li)}
+.layer .k .d{width:14px;height:14px}
+
+/* matrix */
+.mx-scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+.mx{min-width:620px}
+.mx-row{display:grid;grid-template-columns:minmax(220px,1fr) repeat(4,minmax(86px,120px));align-items:center;border-top:1px solid var(--line);transition:background .2s,opacity .2s}
+.mx-row:hover{background:var(--accent-soft)}
+.mx-name{padding:11px 18px;font-size:15px;min-width:0}
+.mx-when{margin-left:10px;font:500 11px/1 var(--mono);color:var(--muted)}
+.mx-cell{display:flex;justify-content:center}
+.mx-cell .d{width:14px;height:14px}
+.mx-head{border-top:0;position:sticky;top:0;background:var(--bg2)}
+.mx-head .mx-name{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mx-col{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 4px;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mx-col b{font-weight:500}
+.mx-col[aria-pressed="true"]{color:var(--ink);background:var(--accent-soft)}
+.mx-col:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.mx-group{padding:20px 18px 8px;font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border-top:1px solid var(--line)}
+.mx-row.all4 .mx-name{font-weight:700}
+.mx-row.all4 .mx-name::after{content:"ALL FOUR";margin-left:10px;font:700 10px/1 var(--mono);letter-spacing:.1em;padding:4px 6px;background:var(--accent);color:var(--accent-ink);vertical-align:2px}
+.mx-row.dim{opacity:.22}
+.mx-foot{background:var(--bg2)}
+.mx-foot .mx-name{font:500 12px/1.3 var(--mono);color:var(--muted)}
+.mx-foot .num{font:800 22px/1 var(--display);font-variant-numeric:tabular-nums}
+.mx-note{margin-top:16px;font:500 13px/1.5 var(--mono);color:var(--muted)}
+
+/* featured */
+.feats{display:flex;flex-direction:column;gap:96px}
+.feat{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.feat.flip .feat-media{order:2}
+.feat > *{min-width:0}
+.feat-media video{display:block;width:100%;max-width:100%;height:min(560px,70vh);object-fit:contain;background:#000;border:1px solid var(--line)}
+.feat-media .cap{margin-top:10px;font:500 12px/1.4 var(--mono);color:var(--muted)}
+.feat-text h3{margin-top:14px;font-size:clamp(32px,4.4vw,56px);font-weight:800;font-stretch:108%;letter-spacing:-.02em}
+.feat-text p{margin-top:18px;color:var(--muted);font-size:18px;max-width:52ch}
+.feat-layers{margin-top:24px;display:flex;align-items:center;gap:8px;font:500 12px/1 var(--mono);color:var(--ink)}
+.feat-layers span{margin-left:8px}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:80px}
+.g,.cert{all:unset;box-sizing:border-box;cursor:zoom-in;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);min-width:0}
+.g:hover,.cert:hover{border-color:var(--accent)}
+.g:focus-visible,.cert:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.g img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.g span,.cert span{padding:12px 14px;font:500 12px/1.45 var(--mono);color:var(--muted)}
+
+/* awards */
+.aw-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 48px}
+.aw{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:baseline;padding:20px 0;border-top:1px solid var(--line)}
+.aw-p{font:800 clamp(30px,3.4vw,44px)/1 var(--display);font-stretch:112%;letter-spacing:-.02em;color:var(--ink)}
+.aw-intl .aw-p{color:var(--accent)}
+.aw-p.long{font-size:clamp(20px,2.3vw,28px);letter-spacing:-.01em;line-height:1.1;overflow-wrap:anywhere}
+.aw-t b{display:block;font:700 19px/1.25 var(--body)}
+.aw-t small{display:block;margin-top:6px;font:500 12px/1.5 var(--mono);color:var(--muted)}
+.issuers{margin-top:48px;display:flex;flex-wrap:wrap;gap:10px}
+.issuers span{font:500 12px/1 var(--mono);letter-spacing:.06em;padding:10px 12px;border:1px solid var(--line);color:var(--muted)}
+
+/* timeline */
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:190px;top:0;bottom:0;width:2px;background:linear-gradient(var(--accent),var(--line))}
+.tl li{display:grid;grid-template-columns:150px 80px 1fr;gap:0 24px;align-items:start;padding-bottom:44px;position:relative}
+.tl-when{text-align:right;font:500 13px/1.3 var(--mono);color:var(--muted);padding-top:20px;letter-spacing:.04em}
+.tl-node{all:unset;box-sizing:border-box;cursor:zoom-in;width:64px;height:64px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);background:var(--surface);box-shadow:0 0 0 6px var(--bg);justify-self:center;position:relative;z-index:1}
+.tl-node img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.tl-node:hover img{transform:scale(1.12)}
+.tl-node:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.tl-dot{width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--accent);justify-self:center;margin-top:22px;position:relative;z-index:1;box-shadow:0 0 0 6px var(--bg)}
+.tl-body{padding-top:14px;max-width:60ch;min-width:0}
+.tl-body h3{font-size:24px;font-weight:700;font-stretch:105%}
+.tl-body p{margin-top:8px;color:var(--muted)}
+
+/* reel */
+.reel{display:flex;flex-direction:column;gap:12px}
+.reel-tall{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.reel-land{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.clip-note{display:flex;flex-direction:column;justify-content:flex-end;gap:12px;padding:28px;border:1px solid var(--accent);background:linear-gradient(160deg,var(--accent-soft),transparent 70%),var(--surface)}
+.clip-note h3{font-size:clamp(24px,2.4vw,32px);font-weight:800;font-stretch:108%;letter-spacing:-.01em}
+.clip-note p{color:var(--muted);font-size:16px}
+.clip.wide{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:end}
+.clip.wide figcaption{padding:24px 28px;font-size:clamp(20px,2.2vw,30px);font-weight:700;line-height:1.15}
+.clip.wide figcaption span{font-size:12px;margin-bottom:10px}
+.clip.wide.flip{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+.clip.wide.flip figcaption{order:-1}
+.clip{margin:0;background:var(--surface);border:1px solid var(--line);min-width:0}
+.clip video{display:block;width:100%;max-width:100%;aspect-ratio:16/9;height:auto;object-fit:contain;background:#000}
+.reel-tall .clip video{aspect-ratio:9/16}
+.vbox{position:relative;display:block;cursor:pointer}
+.vbox video{cursor:pointer}
+.vplay{all:unset;box-sizing:border-box;position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--accent);box-shadow:0 6px 24px rgba(0,0,0,.4);display:grid;place-items:center;cursor:pointer;transition:opacity .2s,transform .2s}
+.vplay::after{content:"";margin-left:5px;border-left:20px solid var(--accent-ink);border-top:12px solid transparent;border-bottom:12px solid transparent}
+.vplay:hover{transform:scale(1.06)}
+.vplay:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.vbox.playing .vplay{opacity:0;pointer-events:none}
+.vbox.playing .vplay::after{margin:0;width:6px;height:22px;border:0;border-left:6px solid var(--accent-ink);border-right:6px solid var(--accent-ink);box-sizing:content-box;padding:0 3px}
+body.editing .vplay{display:none}
+body.editing .vbox{cursor:auto}
+.clip figcaption{padding:12px 14px;font:600 15px/1.3 var(--body)}
+.clip figcaption span{display:block;margin-bottom:4px;font:500 11px/1 var(--mono);letter-spacing:.1em;color:var(--accent)}
+
+/* beyond */
+.beyond{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px}
+.bx{background:var(--surface);border:1px solid var(--line);padding:28px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.bx.big{grid-row:span 2;padding:0;overflow:hidden}
+.bx.big img{width:100%;aspect-ratio:1/1;object-fit:cover;object-position:center 30%}
+.bx.big .in{padding:24px 28px 28px;display:flex;flex-direction:column;gap:12px}
+.bx .fig{font:800 56px/1 var(--display);font-stretch:112%;letter-spacing:-.02em;color:var(--accent);font-variant-numeric:tabular-nums}
+.bx h3{font-size:24px;font-weight:700}
+.bx p{color:var(--muted);font-size:16px}
+.bx .row{display:flex;gap:22px;flex-wrap:wrap;font:500 12px/1.4 var(--mono);color:var(--muted)}
+.bx .row b{display:block;font:800 28px/1 var(--display);color:var(--ink)}
+.bx a.btn{align-self:flex-start;margin-top:auto}
+
+/* certs */
+.certs{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.cert img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center top;background:#fff}
+
+/* next */
+.next{padding-block:128px;background:radial-gradient(ellipse at 50% 120%,var(--accent-soft),transparent 60%)}
+.next h2{font-size:clamp(40px,7vw,96px);font-weight:900;font-stretch:118%;letter-spacing:-.03em;text-transform:uppercase;line-height:.92}
+.next h2 span{color:var(--accent)}
+.steps{margin-top:56px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:2px solid var(--ink)}
+.step{padding:22px 20px 0 0;min-width:0}
+.step .d{width:16px;height:16px;margin-bottom:14px}
+.step b{display:block;font:700 20px/1.2 var(--display);font-stretch:108%}
+.step small{display:block;margin-top:8px;font:500 12px/1.5 var(--mono);color:var(--muted)}
+.next .closing{margin-top:56px;max-width:60ch;font-size:21px;line-height:1.55}
+.next .closing b{color:var(--accent);font-weight:600}
+
+footer{padding-block:40px 64px;font:500 12px/1.7 var(--mono);color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:50;background:rgba(5,7,10,.92);display:grid;place-items:center;cursor:zoom-out;
+  padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+.lb img{max-width:min(1100px,100%);max-height:86vh;object-fit:contain}
+.lb button{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font:600 13px/1 var(--mono);padding:11px 15px;background:var(--accent);color:var(--accent-ink);border:0;cursor:pointer}
+
+/* entrance */
+@media (prefers-reduced-motion:no-preference){
+  .hero h1,.hero .claim,.hero .lede,.cta{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+  .hero .claim{animation-delay:.12s}.hero .lede{animation-delay:.22s}.cta{animation-delay:.32s}
+  @keyframes rise{from{transform:translateY(18px);opacity:.001}to{transform:none;opacity:1}}
+}
+
+@media (max-width:980px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(3){border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+  .layers{grid-template-columns:repeat(2,1fr)}
+  .feat,.feat.flip{grid-template-columns:1fr;gap:28px}
+  .feat.flip .feat-media{order:0}
+  .gal{grid-template-columns:repeat(2,1fr)}
+  .aw-list{grid-template-columns:1fr}
+  .reel-tall{grid-template-columns:repeat(3,1fr)}
+  .reel-land{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .clip.wide,.clip.wide.flip{grid-template-columns:1fr}
+  .clip.wide.flip figcaption{order:0}
+  .clip.wide figcaption{padding:14px 16px}
+  .beyond{grid-template-columns:1fr 1fr}
+  .bx.big{grid-column:span 2;grid-row:auto}
+  .bx.big img{aspect-ratio:16/10}
+  .certs{grid-template-columns:repeat(3,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr);row-gap:28px}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  section{padding-block:72px}
+  .sh{grid-template-columns:1fr;gap:10px;margin-bottom:36px}
+  .sh .num{padding-top:0}
+  .hero .wrap{padding-block:56px 40px}
+  .readout{display:none}
+  .stat{padding:20px 16px}
+  .layers{grid-template-columns:1fr 1fr}
+  .aw{grid-template-columns:110px 1fr}
+  .tl::before{left:31px}
+  .tl li{grid-template-columns:64px 1fr;gap:4px 16px}
+  .tl-when{grid-column:2;grid-row:1;text-align:left;padding-top:0}
+  .tl-node,.tl-dot{grid-column:1;grid-row:1 / span 2}
+  .tl-dot{margin-top:6px}
+  .tl-body{grid-column:2;padding-top:4px}
+  .reel-tall{grid-template-columns:repeat(2,1fr)}
+  .reel-land{grid-template-columns:1fr}
+  .beyond{grid-template-columns:1fr}
+  .bx.big{grid-column:auto}
+  .certs{grid-template-columns:repeat(2,1fr)}
+  .gal{grid-template-columns:1fr 1fr}
+  .feat-media video{height:min(480px,72vh)}
+}
+</style>
+
+<nav class="top" aria-label="Sections">
+  <div class="wrap">
+    <span class="mark">RAYAN<span>/</span>CJ</span>
+    <a href="#work">Work</a>
+    <a href="#record">Record</a>
+    <a href="#path">Path</a>
+    <a href="#motion">In motion</a>
+    <a href="#beyond">Beyond</a>
+  </div>
+</nav>
+<canvas id="railArm" aria-hidden="true"></canvas>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Kochi, India · The Choice School · Class 12</p>
+    <h1>Rayan<span class="l2">Cherian Jacob</span></h1>
+    <p class="claim">Builds machines that <em>move</em>, <em>sense</em> and <em>decide</em>.</p>
+    <p class="lede">He started in kindergarten with a battery, a resistor and a toy that shook itself across the floor. Since then he has designed, wired and programmed more than twenty machines, taken first place in Singapore and reached the final 14 of 236 teams at IIT Bombay.</p>
+    <div class="cta">
+      <a class="btn primary" href="#work">See his work ↓</a>
+    </div>
+  </div>
+  <p class="readout" aria-hidden="true">3-JOINT ARM ON A RAIL · LIVE<br>θ1 <b id="t1">0°</b> · θ2 <b id="t2">0°</b> · θ3 <b id="t3">0°</b><br>MOVE YOUR POINTER · IT FOLLOWS YOU DOWN THE RAIL</p>
+</header>
+
+<div class="stats" role="list">
+  <div class="stat" role="listitem"><b>1st &amp; 3rd</b><span>International podium<br>Singapore, 2024</span></div>
+  <div class="stat" role="listitem"><b>14<small>/236</small></b><span>Finalist teams<br>IIT Bombay e-Yantra</span></div>
+  <div class="stat" role="listitem"><b>21+</b><span>Documented builds, with<br>many more never filmed</span></div>
+  <div class="stat" role="listitem"><b>213,000</b><span>total Views on from science<br>video channel</span></div>
+</div>
+
+<main>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sh">
+      <span class="num"><b>01</b> / SELECTED WORK</span>
+      <div>
+        <h2>Built, tested, taken to competition.</h2>
+        <p>Six builds that show the range: an international winner, an assistant prototype, a Wi-Fi boat, RAFA the Wi-Fi rover, a drone and a project for improving soil.</p>
+      </div>
+    </div>
+    <div class="feats">
+      <article class="feat">
+  <div class="feat-media"><div class="vbox"><video src="roboroarz-arena.mp4" poster="roboroarz-arena-poster.jpg" muted="" playsinline="" preload="none" data-start="10.7" data-end="26.2"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><p class="cap">His rover runs the track as he walks alongside the judges.</p></div>
+  <div class="feat-text"><span class="eyebrow">FIRST PLACE · SINGAPORE 2024</span><h3>The Smorphi Challenge</h3><p>At the James Dyson Foundation's RoboRoarZ International in Singapore, Rayan and his team had to code a virtual and real smorphi to light up when certain QR codes are shown and to navigate a race track. Nearly 300 competitors in 48 teams from five countries took part. Rayan's name is on both podium certificates: first place in the Smorphi Challenge and third place in the Smorphi Imaginary Challenge.</p><div class="feat-layers"><i class="d dM on" title="Mechanism"></i><i class="d dE on" title="Electronics"></i><i class="d dC on" title="Code"></i><i class="d dI on" title="Intelligence"></i><span>Mechanism + Electronics + Code + Intelligence</span></div></div>
+</article>
+<article class="feat flip">
+  <div class="feat-media"><div class="vbox"><video src="scout.mp4" poster="scout-poster.jpg" muted="" playsinline="" preload="none" data-start="27.4" data-end="28.2"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><p class="cap">Coding and controlling the head and body of the scout.</p></div>
+  <div class="feat-text"><span class="eyebrow">WORKSHOP BUILD</span><h3>A prototype of a assistant robot</h3><p>A tall wheeled assistant with a turning head and a camera that detects objects in front of it. The clip shows Rayan at the laptop writing its control code, then tuning the head and sensors by hand.</p><div class="feat-layers"><i class="d dM on" title="Mechanism"></i><i class="d dE on" title="Electronics"></i><i class="d dC on" title="Code"></i><i class="d dI on" title="Intelligence"></i><span>Mechanism + Electronics + Code + Intelligence</span></div></div>
+</article>
+<article class="feat">
+  <div class="feat-media"><div class="vbox"><video src="boat-explained.mp4" poster="boat-explained-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><p class="cap">Rayan explains how the Wi-Fi boat works.</p></div>
+  <div class="feat-text"><span class="eyebrow">WORKSHOP BUILD</span><h3>From desk to water</h3><p>A Wifi controlled boat with two propellers, a microcontroller, a motor driver and a 2 axis controlled head. He tested it on the bench first, then took it to the pool for remote-controlled trials .</p><div class="feat-layers"><i class="d dM on" title="Mechanism"></i><i class="d dE on" title="Electronics"></i><i class="d dC on" title="Code"></i><i class="d dI" title="Intelligence"></i><span>Mechanism + Electronics + Code</span></div></div>
+</article>
+<article class="feat flip">
+  <div class="feat-media"><div class="vbox"><video src="wifi-rover.mp4" poster="wifi-rover-poster.jpg" muted="" playsinline="" preload="none" data-start="32.5" data-end="43.2"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><p class="cap">RAFA driven from a phone app over Wi-Fi.</p></div>
+  <div class="feat-text"><span class="eyebrow">WORKSHOP BUILD</span><h3>RAFA</h3><p>An eight-wheeled rover with Wi-Fi controls. Rayan tested it with the Blynk app and was able to drive it from halfway around the world.</p><div class="feat-layers"><i class="d dM on" title="Mechanism"></i><i class="d dE on" title="Electronics"></i><i class="d dC on" title="Code"></i><i class="d dI" title="Intelligence"></i><span>Mechanism + Electronics + Code</span></div></div>
+</article>
+<article class="feat">
+  <div class="feat-media"><div class="vbox"><video src="drone-trial.mp4" poster="drone-trial-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><p class="cap">Outdoor flight trial.</p></div>
+  <div class="feat-text"><span class="eyebrow">WORKSHOP BUILD</span><h3>ArduPilot drone</h3><p>A multirotor drone built around the ArduPilot flight-control platform, then flight-tested outdoors.</p><div class="feat-layers"><i class="d dM on" title="Mechanism"></i><i class="d dE on" title="Electronics"></i><i class="d dC on" title="Code"></i><i class="d dI" title="Intelligence"></i><span>Mechanism + Electronics + Code</span></div></div>
+</article>
+<article class="feat flip">
+  <div class="feat-media"><div class="vbox"><video src="ecogrow-nationals.mp4" poster="ecogrow-nationals-poster.jpg" muted="" playsinline="" preload="none" data-start="0.8" data-end="6.1"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><p class="cap">Demonstration at the Regionals.</p></div>
+  <div class="feat-text"><span class="eyebrow">NATIONAL LEVEL · CBSE 2024–25</span><h3>EcoGrow: Project to improve soil fertility</h3><p>EcoGrow 2.0: Smart Biochar Solutions was chosen from 177 schools in the Kerala region for the CBSE National Science Exhibition in New Delhi. A 3D-printed, remote-controlled farm rover demonstrated the system on real soil.</p><div class="feat-layers"><i class="d dM on" title="Mechanism"></i><i class="d dE on" title="Electronics"></i><i class="d dC" title="Code"></i><i class="d dI" title="Intelligence"></i><span>Mechanism + Electronics</span></div></div>
+</article>
+    </div>
+    <div class="gal">
+      <button type="button" class="g zoom" data-src="all-terrain.jpg"><img src="all-terrain-card.jpg" alt="All-terrain 4WD chassis: geared motors, IBT-2 drivers, Arduino Uno" loading="lazy"><span>All-terrain 4WD chassis: geared motors, IBT-2 drivers, Arduino Uno</span></button>
+<button type="button" class="g zoom" data-src="multi-terrain-inside.jpg"><img src="multi-terrain-card.jpg" alt="Eight-wheel rover: the wiring inside" loading="lazy"><span>Eight-wheel rover: the wiring inside</span></button>
+<button type="button" class="g zoom" data-src="wifi-rover-poster.jpg"><img src="wifi-rover-card.jpg" alt="RAFA, the eight-wheel Wi-Fi rover" loading="lazy"><span>RAFA, the eight-wheel Wi-Fi rover</span></button>
+<button type="button" class="g zoom" data-src="printed-hand-poster.jpg"><img src="printed-hand-card.jpg" alt="3D-printed hand and arm" loading="lazy"><span>3D-printed hand and arm</span></button>
+<button type="button" class="g zoom" data-src="trebuchet.jpg"><img src="trebuchet-card.jpg" alt="Trebuchet with a 3D-printed frame" loading="lazy"><span>Trebuchet with a 3D-printed frame</span></button>
+<button type="button" class="g zoom" data-src="gyro-turret-poster.jpg"><img src="gyro-turret-card.jpg" alt="Gyroscope-steered turret" loading="lazy"><span>Gyroscope-steered turret</span></button>
+<button type="button" class="g zoom" data-src="coilgun-poster.jpg"><img src="coilgun-card.jpg" alt="Arduino-timed coilgun" loading="lazy"><span>Arduino-timed coilgun</span></button>
+<button type="button" class="g zoom" data-src="lego-battlebot-poster.jpg"><img src="lego-battlebot-card.jpg" alt="LEGO Technic battle bot" loading="lazy"><span>LEGO Technic battle bot</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="record">
+  <div class="wrap">
+    <div class="sh">
+      <span class="num"><b>02</b> / ON THE RECORD</span>
+      <div>
+        <h2>Accomplishments</h2>
+        <p>Results from international, national and inter-school competitions. Orange marks international events. Certificates are at the end of the page.</p>
+      </div>
+    </div>
+    <ul class="aw-list">
+      <li class="aw aw-intl"><span class="aw-p">1st</span><span class="aw-t"><b>Smorphi Challenge</b><small>RoboRoarZ International 2024 · James Dyson Foundation · Singapore</small></span></li>
+<li class="aw aw-intl"><span class="aw-p">3rd</span><span class="aw-t"><b>Smorphi Imaginary Challenge</b><small>RoboRoarZ International 2024 · Singapore</small></span></li>
+<li class="aw aw-natl"><span class="aw-p long">Top 14</span><span class="aw-t"><b>of 236 teams · e-Yantra</b><small>IIT Bombay · Ministry of Education programme · 2024–25</small></span></li>
+<li class="aw aw-natl"><span class="aw-p long">National</span><span class="aw-t"><b>CBSE Science Exhibition</b><small>Selected from 177 schools, Kerala region · 2024–25</small></span></li>
+<li class="aw aw-intl"><span class="aw-p">1st</span><span class="aw-t"><b>RoboRAVE International</b><small>48-hour online round · qualified for the 2021 Global Championship</small></span></li>
+<li class="aw aw-intl"><span class="aw-p">3rd</span><span class="aw-t"><b>World Scholar's Cup</b><small>Overall student, Senior Division · 2023 Kochi Round</small></span></li>
+<li class="aw aw-natl"><span class="aw-p long">Top 20</span><span class="aw-t"><b>teams in India · Jigyasa Aero Fest 2023</b><small>Selected for the national event on a project report about high-altitude platform systems · CSIR-National Aerospace Laboratories, Bengaluru</small></span></li>
+<li class="aw aw-natl"><span class="aw-p">2nd</span><span class="aw-t"><b>Aero Fest 2023 · Cultural competition</b><small>CSIR-National Aerospace Laboratories · Bengaluru · December 2023</small></span></li>
+<li class="aw aw-reg"><span class="aw-p">2nd</span><span class="aw-t"><b>Praudyogiki tinkering challenge</b><small>Senior Visionaries · Bhavan's Vidya Mandir · 2026</small></span></li>
+<li class="aw aw-reg"><span class="aw-p">3rd</span><span class="aw-t"><b>PyTorch relay coding</b><small>Axiora Tech-Ed · Chinmaya Vidyalaya · 2026</small></span></li>
+<li class="aw aw-reg"><span class="aw-p">3rd</span><span class="aw-t"><b>Neural Nexus</b><small>Crossroads 2026 · Global Public School</small></span></li>
+<li class="aw aw-reg"><span class="aw-p">2nd</span><span class="aw-t"><b>Gyroscope turret (Maths Model)</b><small>Sree Vidyalaya · 2025</small></span></li>
+<li class="aw aw-reg"><span class="aw-p">2nd</span><span class="aw-t"><b>SDG science, model city</b><small>Bhavan's Elamakkara · 2025</small></span></li>
+<li class="aw aw-reg"><span class="aw-p long">Award</span><span class="aw-t"><b>Raman Award</b><small>ClawBot · Class 4</small></span></li>
+<li class="aw aw-reg"><span class="aw-p long">Champion</span><span class="aw-t"><b>Overall sports champion</b><small>School athletics · Class 3</small></span></li>
+    </ul>
+    <div class="issuers" aria-label="Organisers">
+      <span>IIT Bombay</span><span>James Dyson Foundation</span><span>SUTD Singapore</span><span>IEEE Singapore Section</span><span>CSIR-NAL</span><span>CBSE</span><span>RoboRAVE International</span><span>World Scholar's Cup</span>
+    </div>
+  </div>
+</section>
+
+<section id="path">
+  <div class="wrap">
+    <div class="sh">
+      <span class="num"><b>03</b> / THE PATH</span>
+      <div>
+        <h2>Kindergarten to Class 12.</h2>
+        <p>A history of projects from the kindergarden to his&nbsp; final school year</p>
+      </div>
+    </div>
+    <ol class="tl">
+      <li><span class="tl-when">Kindergarten</span><span class="tl-dot"></span><div class="tl-body"><h3>Vibration controlled robot</h3><p>His first machine shook itself across the floor. His first machine consisted of 2 motors vibration to move the robot</p></div></li>
+<li><span class="tl-when">Early years</span><span class="tl-dot"></span><div class="tl-body"><h3>Old toys, new machines</h3><p>He stripped broken toys for motors and gears, rebuilt them into new machines and wired them up to make something new.</p></div></li>
+<li><span class="tl-when">Primary</span><span class="tl-dot"></span><div class="tl-body"><h3>LEGO creations and money-dispenser machines</h3><p>In his early days just like any kid loved lego and used it to make a vast number of creation from lego cars to relatively big lego machines.He also made a simple cash dispenser for toy money for monopoly.</p></div></li>
+<li><span class="tl-when">Class 4</span><button type="button" class="tl-node zoom" data-src="clawbot-poster.jpg" aria-label="Enlarge photo: ClawBot wins the Raman Award"><img src="clawbot-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>ClawBot wins the Raman Award</h3><p>A four-wheeled machine with a front claw that is controlled using wired remote and grips them with a single axis of rotation claw.</p></div></li>
+<li><span class="tl-when">Jan 2021</span><button type="button" class="tl-node zoom" data-src="humanoid.jpg" aria-label="Enlarge photo: First place, RoboRAVE International online"><img src="humanoid-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>First place, RoboRAVE International online</h3><p>He won his first championship in the roborave international competition The same year: a cardboard humanoid with three-joint arms and a four wheel drive&nbsp;</p></div></li>
+<li><span class="tl-when">Apr 2021</span><button type="button" class="tl-node zoom" data-src="gliders-2021-poster.jpg" aria-label="Enlarge photo: First experiments with flight"><img src="gliders-2021-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>First experiments with flight</h3><p>During covid-19 he tried to make rc planes with Cardboard, launched by hand, this&nbsp; started of a line that runs through RC aircraft to drones.</p></div></li>
+<li><span class="tl-when">Middle school</span><button type="button" class="tl-node zoom" data-src="all-terrain.jpg" aria-label="Enlarge photo: From bricks to microcontrollers"><img src="all-terrain-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>From bricks to microcontrollers</h3><p>LEGO Technic gives way to Arduino: a Wi-Fi rover, gesture control, a servo arm and a four-wheel-drive chassis.</p></div></li>
+<li><span class="tl-when">Class 9</span><button type="button" class="tl-node zoom" data-src="aircraft-poster.jpg" aria-label="Enlarge photo: Flight, Aero Fest and Scientia"><img src="aircraft-poster-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>Flight, Aero Fest and Scientia</h3><p>He tried to make a ekranoplan; his team's report on high-altitude platform systems was selected among the top 20 in India for CSIR-NAL's national Aero Fest 2023, where they took 2nd in the cultural competition; a rover model goes to Scientia.</p></div></li>
+<li><span class="tl-when">Class 9</span><button type="button" class="tl-node zoom" data-src="wsc-2023.jpg" aria-label="Enlarge photo: Third overall, World Scholar's Cup"><img src="wsc-2023-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>Third overall, World Scholar's Cup</h3><p>Debate, collaborative writing and quiz rounds at the 2023 Kochi Round, Senior Division.</p></div></li>
+<li><span class="tl-when">Jul 2024</span><button type="button" class="tl-node zoom" data-src="smorphi-rover.jpg" aria-label="Enlarge photo: Two podiums in Singapore"><img src="smorphi-rover-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>Two podiums in Singapore</h3><p>1st and 3rd at RoboRoarZ International with a camera-guided, QR-reading rover.</p></div></li>
+<li><span class="tl-when">2024–25</span><button type="button" class="tl-node zoom" data-src="cbse-stall-2.jpg" aria-label="Enlarge photo: IIT Bombay finalist and CBSE nationals"><img src="cbse-rover-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>IIT Bombay finalist and CBSE nationals</h3><p>Top 14 of 236 teams at e-Yantra; EcoGrow 4.0 selected for the national exhibition in New Delhi.</p></div></li>
+<li><span class="tl-when">2025</span><button type="button" class="tl-node zoom" data-src="gyro-turret-poster.jpg" aria-label="Enlarge photo: A turret that follows your hand"><img src="gyro-turret-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>A turret that follows your hand</h3><p>2nd place with a gyroscope-steered turret, and 2nd with an SDG model city.</p></div></li>
+<li><span class="tl-when">2026</span><button type="button" class="tl-node zoom" data-src="cert-axiora.jpg" aria-label="Enlarge photo: Neural networks enter the toolkit"><img src="cert-axiora-thumb.jpg" alt="" loading="lazy"></button><div class="tl-body"><h3>Neural networks enter the toolkit</h3><p>2nd at the Praudyogiki tinkering challenge, 3rd in PyTorch relay coding, 3rd at Neural Nexus.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section id="motion">
+  <div class="wrap">
+    <div class="sh">
+      <span class="num"><b>04</b> / IN MOTION</span>
+      <div>
+        <h2>Watch them work.</h2>
+        <p>Twelve clips, from a Class 4 claw machine to a gyroscope-steered turret.&nbsp;</p>
+      </div>
+    </div>
+    <div class="reel">
+<figure class="clip wide"><div class="vbox"><video src="printed-hand.mp4" poster="printed-hand-poster.jpg" muted="" playsinline="" preload="none" data-start="67.8" data-end="82.9"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>BUILD</span>3D-printed robot arm</figcaption></figure>
+<div class="reel-tall">
+<figure class="clip"><div class="vbox"><video src="clawbot.mp4" poster="clawbot-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>CLASS 4</span>A robot with a rotable claw</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="gliders-2021.mp4" poster="gliders-2021-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>2021</span>First prototype RC plane(In 6th grade)</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="boat-pool.mp4" poster="boat-pool-poster.jpg" muted="" playsinline="" preload="none" data-start="2.1" data-end="7.0"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>TEST</span>Wi-Fi boat, pool trial</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="smart-bin.mp4" poster="smart-bin-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>DEMO</span>A Laundry basket with load capacity reading(10th grade)</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="coilgun.mp4" poster="coilgun-poster.jpg" muted="" playsinline="" preload="none" data-start="7.3" data-end="17.3"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>BUILD</span>Model Coilgun for Physics Project</figcaption></figure>
+</div>
+<div class="reel-land">
+<figure class="clip"><div class="vbox"><video src="aircraft.mp4" poster="aircraft-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>CLASS 9</span>Prototype RC Ekranoplan testing&nbsp;</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="boat-bench.mp4" poster="boat-bench-poster.jpg" muted="" playsinline="" preload="none" data-end="2.4"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>TEST</span>Wi-Fi boat, bench test</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="lego-battlebot.mp4" poster="lego-battlebot-poster.jpg" muted="" playsinline="" preload="none" data-end="6.9"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>LEGO TECHNIC</span>LEGO Technic battle bot</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="multi-terrain.mp4" poster="multi-terrain-poster.jpg" muted="" playsinline="" preload="none" data-end="6.5"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>DRIVE TEST</span>Multi-terrain Rescue rover</figcaption></figure>
+<figure class="clip"><div class="vbox"><video src="gyro-turret.mp4" poster="gyro-turret-poster.jpg" muted="" playsinline="" preload="none"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>2025</span>Gyroscope controlled&nbsp; turret</figcaption></figure>
+<div class="clip clip-note"><span class="eyebrow">Behind the clips</span><h3>More on the bench than on camera.</h3><p>These clips are a sample of more than twenty documented builds, and many more were never filmed. They range from LEGO Technic to Arduino, Wi-Fi control and 3D-printed parts.</p></div>
+</div>
+<figure class="clip wide flip"><div class="vbox"><video src="lego-rover.mp4" poster="lego-rover-poster.jpg" muted="" playsinline="" preload="none" data-end="18.0"></video><button type="button" class="vplay" aria-label="Play or pause video"></button></div><figcaption><span>OWN DESIGN</span>LEGO Technic tank</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="beyond">
+  <div class="wrap">
+    <div class="sh">
+      <span class="num"><b>05</b> / BEYOND THE BENCH</span>
+      <div>
+        <h2>Engineer. Filmmaker. Teammate.</h2>
+        <p>The same habits show up outside the workshop: preparation, persistence and working with others.</p>
+      </div>
+    </div>
+    <div class="beyond">
+      <article class="bx big"><button type="button" class="zoom" data-src="wsc-2023.jpg" style="all:unset;cursor:zoom-in;display:block"><img src="wsc-2023.jpg" alt="Rayan with his World Scholar's Cup trophies and medals" loading="lazy"></button>
+        <div class="in"><span class="eyebrow">World Scholar's Cup · 2023 Kochi Round</span><div class="fig">1st</div><h3>Jac Khor Award , Senior Division</h3><p>Highest individual overall award in World Scholar 's Cup international academic competition in debate, collaborative writing and quiz rounds. He came home with two trophies and a set of medals.</p></div></article>
+      <article class="bx"><span class="eyebrow">YouTube · Geographic</span><div class="fig">213K</div><h3>Views on his science channel</h3><div class="row"><span><b>72</b>videos</span><span><b>184</b>subscribers</span><span><b>Mar 2025</b>started</span></div><p>Short videos about nature, geography and animals, published almost every week.</p><a class="btn" href="https://www.youtube.com/@Geographic-i9l/shorts" target="_blank" rel="noopener">Watch on YouTube ↗</a></article>
+      <article class="bx"><span class="eyebrow">Sport</span><h3>Basketball and football</h3><p>He plays on his school's basketball and football interhouse team and has competed since early childhood. He was overall sports champion in Class 3.</p></article>
+      <article class="bx"><span class="eyebrow">Film</span><h3>Stop-motion animation</h3><p>He has made many stop-motion films, planning every shot and moving his models frame by frame.</p></article>
+      <article class="bx"><span class="eyebrow">Teamwork</span><h3>Built with others</h3><p>His Singapore win, e-Yantra finals, CBSE nationals and Aero Fest prize were all team efforts.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="certificates">
+  <div class="wrap">
+    <div class="sh">
+      <span class="num"><b>06</b> / EVIDENCE</span>
+      <div>
+        <h2>Certificates and press.</h2>
+        <p>Click on&nbsp; any image to read it.</p>
+      </div>
+    </div>
+    <div class="certs">
+      <button type="button" class="cert zoom" data-src="cert-roboroarz-1st.jpg"><img src="cert-roboroarz-1st.jpg" alt="RoboRoarZ 2024 · 1st" loading="lazy"><span>RoboRoarZ 2024 · 1st</span></button>
+<button type="button" class="cert zoom" data-src="cert-roboroarz-3rd.jpg"><img src="cert-roboroarz-3rd.jpg" alt="RoboRoarZ 2024 · 3rd" loading="lazy"><span>RoboRoarZ 2024 · 3rd</span></button>
+<button type="button" class="cert zoom" data-src="cert-eyantra.jpg"><img src="cert-eyantra.jpg" alt="e-Yantra, IIT Bombay · Finalist" loading="lazy"><span>e-Yantra, IIT Bombay · Finalist</span></button>
+<button type="button" class="cert zoom" data-src="cert-aerofest.jpg"><img src="cert-aerofest.jpg" alt="Aero Fest 2023 · 2nd" loading="lazy"><span>Aero Fest 2023 · 2nd</span></button>
+<button type="button" class="cert zoom" data-src="roborave-cert.jpg"><img src="roborave-cert.jpg" alt="RoboRAVE 2021 · Qualifier" loading="lazy"><span>RoboRAVE 2021 · Qualifier</span></button>
+<button type="button" class="cert zoom" data-src="cert-praudyogiki.jpg"><img src="cert-praudyogiki.jpg" alt="Praudyogiki 2026 · 2nd" loading="lazy"><span>Praudyogiki 2026 · 2nd</span></button>
+<button type="button" class="cert zoom" data-src="cert-axiora.jpg"><img src="cert-axiora.jpg" alt="Axiora Tech-Ed 2026 · 3rd" loading="lazy"><span>Axiora Tech-Ed 2026 · 3rd</span></button>
+<button type="button" class="cert zoom" data-src="cert-crossroads.jpg"><img src="cert-crossroads.jpg" alt="Crossroads 2026 · 3rd" loading="lazy"><span>Crossroads 2026 · 3rd</span></button>
+<button type="button" class="cert zoom" data-src="press-roboroarz.jpg"><img src="press-roboroarz.jpg" alt="Press · Singapore win" loading="lazy"><span>Press · Singapore win</span></button>
+<button type="button" class="cert zoom" data-src="wsc-2023.jpg"><img src="wsc-2023.jpg" alt="World Scholar's Cup 2023" loading="lazy"><span>World Scholar's Cup 2023</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="next" id="next">
+  <div class="wrap">
+    <span class="eyebrow">07 / WHERE THIS LEADS</span>
+    <h2 style="margin-top:20px">Four layers in.<br><span>Ready for the next.</span></h2>
+    <div class="steps">
+      <div class="step"><i class="d dM on"></i><b>Mechanism</b><small>Kindergarten onward · toy parts, claws, LEGO Technic</small></div>
+      <div class="step"><i class="d dE on"></i><b>Electronics</b><small>Kindergarten onward · from a battery and resistor to motor drivers and advanced flight controllers</small></div>
+      <div class="step"><i class="d dC on"></i><b>Code</b><small>2020–21 onward · humanoid arms, RoboRAVE, Arduino, ArduPilot</small></div>
+      <div class="step"><i class="d dI on"></i><b>Intelligence</b><small>2024 onward · camera vision, then PyTorch</small></div>
+    </div>
+    <p class="closing">Rayan has spent his school years teaching himself to join moving parts, circuits, software and learning systems into one working machine. What he wants next is <b>a place that teaches all four together</b>, with labs to build in and harder problems to solve.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Rayan Cherian Jacob · The Choice School, Kochi, Kerala, India</span>
+    <span>Portfolio · October 2026</span>
+  </div>
+</footer>
+
+<div class="lb" id="lb" hidden=""><img id="lbImg" alt=""><button type="button" id="lbClose">Close ✕</button></div>
+
+<script>
+(function(){
+  /* ---------- lightbox ---------- */
+  var lb=document.getElementById('lb'), li=document.getElementById('lbImg'), lc=document.getElementById('lbClose');
+  document.querySelectorAll('.zoom').forEach(function(b){
+    b.addEventListener('click',function(){var im=b.querySelector('img');li.src=b.getAttribute('data-src');li.alt=im?im.alt:'';lb.hidden=false;lc.focus();});
+  });
+  function close(){lb.hidden=true;li.removeAttribute('src');}
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!lb.hidden)close();});
+
+  /* ---------- matrix filter ---------- */
+  var cols=document.querySelectorAll('.mx-col'), rows=document.querySelectorAll('.mx-row[data-layers]'), active=null;
+  cols.forEach(function(c){c.addEventListener('click',function(){
+    var l=c.getAttribute('data-l'); active=(active===l)?null:l;
+    cols.forEach(function(x){x.setAttribute('aria-pressed',x.getAttribute('data-l')===active?'true':'false')});
+    rows.forEach(function(r){r.classList.toggle('dim',!!active&&r.getAttribute('data-layers').indexOf(active)<0)});
+  });});
+
+  /* ---------- 3-joint arm on a rail down the right edge (FABRIK) ---------- */
+  var cv=document.getElementById('railArm'); if(!cv||!cv.getContext)return;
+  var ctx=cv.getContext('2d'), dpr=Math.min(window.devicePixelRatio||1,2);
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nav=document.querySelector('nav.top');
+  var t1=document.getElementById('t1'),t2=document.getElementById('t2'),t3=document.getElementById('t3');
+  var W=0,H=0,railX=0,reach=0,L=[0,0,0],P=[],pointer=null,trail=[],t0=performance.now();
+  var carY=-1,carV=0,lastT=0,tripTo=null,tripD=1; /* carriage position (page coordinates), speed, current trip */
+  var cur={x:0,y:0};      /* gripper aim, in screen coordinates */
+  var running=false;
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function docH(){return Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);}
+  function railTop(){return nav?nav.offsetTop+nav.offsetHeight+6:60;}
+  function size(){
+    W=window.innerWidth;H=window.innerHeight;
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+    railX=W-Math.max(16,parseFloat(getComputedStyle(document.body).paddingRight)||0)-6;
+    reach=W<700?Math.max(110,W*0.3):Math.min(W*0.42,560);
+    L=[reach*.42,reach*.34,reach*.24];
+  }
+  var lastScroll=-1e9,HOLD=0;
+  function want(){ /* where the carriage should sit: level with the cursor (or mid-screen), kept on the rail */
+    var y=window.scrollY+(pointer?pointer.y:H*0.52);
+    return Math.min(Math.max(y,railTop()+30),docH()-30);
+  }
+  function rest(by){return {x:railX-reach*0.55,y:by+reach*0.18};}
+  function idle(t,by){var s=t/1000;return {x:railX-reach*(0.55+0.18*Math.sin(s*.6)),y:by+reach*0.25*Math.sin(s*1.1)};}
+  function solve(bx,by,tx,ty){
+    var total=L[0]+L[1]+L[2],dx=tx-bx,dy=ty-by,d=Math.hypot(dx,dy);
+    if(d>total*.995){var k=total*.995/d;tx=bx+dx*k;ty=by+dy*k;}
+    if(tx>bx-8)tx=bx-8; /* the arm works to the left of its rail */
+    if(P.length!==4){P=[{x:bx,y:by}];for(var i=0;i<3;i++)P.push({x:P[i].x-L[i]*.8,y:P[i].y+L[i]*.3});}
+    for(var it=0;it<12;it++){
+      P[3]={x:tx,y:ty};
+      for(i=2;i>=0;i--){var vx=P[i].x-P[i+1].x,vy=P[i].y-P[i+1].y,m=Math.hypot(vx,vy)||1;P[i]={x:P[i+1].x+vx/m*L[i],y:P[i+1].y+vy/m*L[i]};}
+      P[0]={x:bx,y:by};
+      for(i=0;i<3;i++){vx=P[i+1].x-P[i].x;vy=P[i+1].y-P[i].y;m=Math.hypot(vx,vy)||1;P[i+1]={x:P[i].x+vx/m*L[i],y:P[i].y+vy/m*L[i]};}
+    }
+  }
+  function ang(a,b){return Math.atan2(b.y-a.y,b.x-a.x);}
+  function deg(r){var d=Math.round(r*180/Math.PI);return (d>0?'+':'')+d+'°';}
+  function draw(by){
+    var ink=css('--ink'),acc=css('--accent'),mut=css('--muted'),line=css('--line'),bg=css('--bg');
+    ctx.clearRect(0,0,W,H);
+    var sy=window.scrollY,top=railTop()-sy,bot=docH()-sy-10;
+    var y0=Math.max(top,0),y1=Math.min(bot,H);
+    if(y1>y0){
+      /* rail: two bars with sleepers that scroll with the page */
+      ctx.strokeStyle=mut;ctx.globalAlpha=.55;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(railX-5,y0);ctx.lineTo(railX-5,y1);ctx.moveTo(railX+5,y0);ctx.lineTo(railX+5,y1);ctx.stroke();
+      ctx.globalAlpha=1;
+      if(top>=0&&top<H){ctx.fillStyle=ink;ctx.fillRect(railX-11,top-3,22,4);}
+      if(bot>0&&bot<=H){ctx.fillStyle=ink;ctx.fillRect(railX-11,bot-1,22,4);}
+    }
+    /* trail */
+    for(var i=1;i<trail.length;i++){ctx.strokeStyle=acc;ctx.globalAlpha=i/trail.length*.5;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(trail[i-1].x,trail[i-1].y);ctx.lineTo(trail[i].x,trail[i].y);ctx.stroke();}
+    ctx.globalAlpha=1;
+    /* carriage */
+    ctx.fillStyle=ink;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(railX-13,by-24,26,48,5);else ctx.rect(railX-13,by-24,26,48);ctx.fill();
+    ctx.fillStyle=acc;ctx.fillRect(railX-13,by-3,26,6);
+    /* links and joints */
+    var w=[14,10,7];
+    for(i=0;i<3;i++){ctx.strokeStyle=ink;ctx.lineCap='round';ctx.lineWidth=w[i];ctx.beginPath();ctx.moveTo(P[i].x,P[i].y);ctx.lineTo(P[i+1].x,P[i+1].y);ctx.stroke();}
+    for(i=0;i<3;i++){ctx.fillStyle=acc;ctx.beginPath();ctx.arc(P[i].x,P[i].y,w[i]*.62,0,7);ctx.fill();ctx.fillStyle=bg;ctx.beginPath();ctx.arc(P[i].x,P[i].y,w[i]*.24,0,7);ctx.fill();}
+    var e=P[3],a=ang(P[2],P[3]);ctx.strokeStyle=acc;ctx.lineWidth=3;
+    [-.55,.55].forEach(function(o){ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.x+Math.cos(a+o)*14,e.y+Math.sin(a+o)*14);ctx.lineTo(e.x+Math.cos(a+o*.3)*23,e.y+Math.sin(a+o*.3)*23);ctx.stroke();});
+    if(pointer){ctx.strokeStyle=mut;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pointer.x-8,pointer.y);ctx.lineTo(pointer.x+8,pointer.y);ctx.moveTo(pointer.x,pointer.y-8);ctx.lineTo(pointer.x,pointer.y+8);ctx.stroke();}
+    var a1=ang(P[0],P[1]),a2=ang(P[1],P[2])-a1,a3=ang(P[2],P[3])-ang(P[1],P[2]);
+    if(t1){t1.textContent=deg(Math.PI-a1);t2.textContent=deg(-a2);t3.textContent=deg(-a3);}
+  }
+  function frame(t){
+    var target=want();
+    if(carY<0)carY=target;
+    var held=t-lastScroll<HOLD;                     /* no wait: the arm sets off as soon as the page moves */
+    var dt=Math.min(0.05,Math.max(0.001,(t-(lastT||t))/1000));lastT=t;
+    if(held){carV=0;}
+    else if(reduce){carY+=(target-carY)*.25;carV=0;}
+    else{
+      /* each trip: ease off the mark, crawl at a steady speed, then a long, very gradual stop */
+      var d=target-carY,r=Math.abs(d),V=35,A=40; /* half the previous speed: a 35 px-a-second crawl */
+      if(tripTo===null||Math.abs(target-tripTo)>30){tripTo=target;tripD=Math.max(r,1);}
+      if(r<0.5){carY=target;carV=0;}
+      else{
+        /* brake over most of the trip (at least half a screen), easing out so the stop is very soft */
+        var third=Math.min(tripD*0.6,150),goal=r>third?V:Math.max(0.8,V*Math.pow(r/third,0.7));
+        var desired=(d>0?1:-1)*goal;
+        if(desired*carV>0&&Math.abs(desired)<Math.abs(carV))carV=desired;   /* braking follows the curve */
+        else{var dv=desired-carV,m=A*dt;carV+=Math.max(-m,Math.min(m,dv));} /* starting off is gradual */
+        var step=carV*dt;
+        if(step*d>0&&Math.abs(step)>=r){carY=target;carV=0;}else carY+=step;
+      }
+    }
+    var by=carY-window.scrollY;
+    var travelling=!held&&Math.abs(target-carY)>reach*0.5;
+    /* while the carriage travels the arm folds in; once it arrives it reaches for the pointer */
+    var g=travelling?rest(by):(pointer||(reduce?rest(by):idle(t-t0,by)));
+    var k=1-Math.exp(-dt/(reduce?0.15:0.9));          /* the arm swings over about a second, never snaps */
+    cur.x+=(g.x-cur.x)*k;cur.y+=(g.y-cur.y)*k;
+    solve(railX,by,cur.x,cur.y);
+    trail.push({x:P[3].x,y:P[3].y});if(trail.length>50)trail.shift();
+    var moving=travelling||Math.hypot(g.x-cur.x,g.y-cur.y)>0.4;
+    if(!moving&&trail.length>1)trail.shift();
+    draw(by);
+    if(!document.hidden&&(held||moving||Math.abs(target-carY)>0.5||Math.abs(carV)>1||trail.length>1||(!reduce&&!pointer)))requestAnimationFrame(frame);else{running=false;lastT=0;}
+  }
+  function start(){if(!running){running=true;requestAnimationFrame(frame);}}
+  size();var by0=want()-window.scrollY;var r0=rest(by0);cur={x:r0.x,y:r0.y};start();
+  window.addEventListener('resize',function(){size();P=[];start();});
+  window.addEventListener('scroll',function(){lastScroll=performance.now();start();},{passive:true});
+  document.addEventListener('visibilitychange',start);
+  function aim(e){pointer={x:e.clientX,y:e.clientY};start();}
+  document.addEventListener('pointermove',aim,{passive:true});
+  document.addEventListener('pointerdown',aim,{passive:true});
+  document.documentElement.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){pointer=null;start();}});
+  if(window.matchMedia){var mq=window.matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',start);}
+})();
+</script>
+<style>
+/* in-page editor (text + video clip ranges), shown only to people who can edit */
+.ed-bar{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;align-items:center;max-width:calc(100vw - 32px);font:600 13px/1 var(--mono)}
+.ed-bar[hidden]{display:none!important}
+[hidden]{display:none!important}
+.ed-bar button{font:600 13px/1 var(--mono);padding:13px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.ed-bar button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.ed-bar button:disabled{opacity:.6;cursor:progress}
+.ed-msg{font:500 12px/1.4 var(--mono);padding:10px 12px;background:var(--surface);border:1px solid var(--line);color:var(--ink);max-width:320px}
+.ed-msg:empty{display:none}
+body.editing [data-ed]{outline:1px dashed var(--accent);outline-offset:3px;cursor:text}
+body.editing [data-ed]:focus{outline:2px solid var(--accent);background:var(--accent-soft)}
+body.editing [data-ed].ed-changed{outline-style:solid}
+.vt{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;background:var(--accent-soft);border:1px dashed var(--accent);font:500 12px/1.3 var(--mono);color:var(--ink)}
+.vt b{font-weight:600;margin-right:auto;font-variant-numeric:tabular-nums}
+.vt button{font:600 11px/1 var(--mono);padding:8px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.vt button:hover{border-color:var(--accent)}
+.vt.ed-changed{border-style:solid}
+body.editing .hero .wrap{pointer-events:auto}
+body.editing #arm{pointer-events:none}
+</style>
+<div class="ed-bar" id="edBar" hidden="">
+  <span class="ed-msg" id="edMsg" role="status"></span>
+  <button type="button" id="edCancel" hidden="">Cancel</button>
+  <button type="button" id="edSave" class="primary" hidden="">Save changes</button>
+  <button type="button" id="edToggle" class="primary">Edit page</button>
+</div>
+<script>
+/* ---------- video clip ranges: every viewer only sees the chosen portion ---------- */
+(function(){
+  function editing(){return document.body.classList.contains('editing');}
+  function s(v){return parseFloat(v.getAttribute('data-start'))||0;}
+  function e(v){var x=parseFloat(v.getAttribute('data-end'));return x>0?x:Infinity;}
+  function wire(v){
+    if(v.__clip)return;v.__clip=1;
+    v.addEventListener('loadedmetadata',function(){if(!editing()&&s(v)>0&&v.currentTime<s(v))v.currentTime=s(v);});
+    v.addEventListener('play',function(){if(editing())return;if(v.currentTime<s(v)-0.05||v.currentTime>=e(v)-0.05)v.currentTime=s(v);});
+    v.addEventListener('timeupdate',function(){if(editing())return;if(v.currentTime>=e(v)){v.pause();v.currentTime=s(v);}});
+    v.addEventListener('seeked',function(){if(editing())return;if(v.currentTime<s(v)-0.05)v.currentTime=s(v);else if(v.currentTime>e(v))v.currentTime=Math.max(s(v),e(v)-0.2);});
+  }
+  document.querySelectorAll('video').forEach(wire);
+  window.__wireClip=wire;
+  document.querySelectorAll('.vbox').forEach(function(box){
+    var v=box.querySelector('video');if(!v)return;v.muted=true;
+    function paint(){box.classList.toggle('playing',!v.paused&&!v.ended);}
+    ['play','pause','ended'].forEach(function(n){v.addEventListener(n,paint);});
+    var canHover=window.matchMedia&&window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    function go(withSound){
+      v.muted=!(withSound&&v.getAttribute('data-sound')==='on');
+      var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;v.play().catch(function(){});});
+    }
+    box.addEventListener('mouseenter',function(){if(editing()||!canHover)return;box.__hover=true;if(v.paused||v.ended)go(window.__touched);});
+    box.addEventListener('mouseleave',function(){if(editing()||!box.__hover)return;box.__hover=false;v.pause();});
+    box.addEventListener('click',function(ev){
+      if(editing())return;ev.preventDefault();window.__touched=true;
+      if(v.paused||v.ended){go(true);}
+      else if(v.muted&&v.getAttribute('data-sound')==='on'){v.muted=false;}
+      else{box.__hover=false;v.pause();}
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  var SEL='.hero h1, .hero .eyebrow, .claim, .lede, .stat b, .stat span, .sh h2, .sh p, .feat-text .eyebrow, .feat-text h3, .feat-text p, .feat-media .cap, .aw-p, .aw-t b, .aw-t small, .tl-when, .tl-body h3, .tl-body p, .clip figcaption, .clip-note .eyebrow, .clip-note h3, .clip-note p, .bx .eyebrow, .bx h3, .bx p, .bx .fig, .step b, .step small, .next h2, .next .closing, footer span';
+  var STASH='rcj-unsaved-edits';
+  var ALLOWED={EM:1,B:1,STRONG:1,I:1,BR:1,SMALL:1,SPAN:1};
+  var bar=document.getElementById('edBar'), tog=document.getElementById('edToggle'), save=document.getElementById('edSave'),
+      cancel=document.getElementById('edCancel'), msg=document.getElementById('edMsg');
+  var art=null, editing=false, originals=[], vOriginals=[];
+
+  function els(root){return Array.prototype.slice.call(root.querySelectorAll(SEL));}
+  function vids(root){return Array.prototype.slice.call(root.querySelectorAll('video'));}
+  function clean(node){
+    var out=document.createDocumentFragment();
+    node.childNodes.forEach(function(c){
+      if(c.nodeType===3){out.appendChild(document.createTextNode(c.textContent));}
+      else if(c.nodeType===1){
+        if(ALLOWED[c.tagName]){var k=document.createElement(c.tagName.toLowerCase());var cl=(c.getAttribute('class')||'').replace(/\bed-changed\b/g,'').trim();if(cl)k.setAttribute('class',cl);k.appendChild(clean(c));out.appendChild(k);}
+        else if(c.tagName==='DIV'||c.tagName==='P'){out.appendChild(document.createElement('br'));out.appendChild(clean(c));}
+        else out.appendChild(clean(c));
+      }
+    });
+    return out;
+  }
+  function cleanHTML(el){var d=document.createElement('div');d.appendChild(clean(el));return d.innerHTML.replace(/(<br>)+$/,'');}
+  function decode(b64){var bin=atob(b64),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder().decode(u);}
+  function encode(str){var u=new TextEncoder().encode(str),s='';for(var i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);}
+  function say(t){msg.textContent=t||'';}
+  function ss(fn){try{return fn();}catch(e){return null;}}
+  function fmt(t){if(!(t>=0)||t===Infinity)return 'end';var m=Math.floor(t/60),s=(t-m*60);return m+':'+(s<10?'0':'')+s.toFixed(1);}
+  function range(v){return [v.getAttribute('data-start')||'',v.getAttribute('data-end')||'',v.getAttribute('data-sound')||''];}
+  function same(a,b){return !!a&&!!b&&a[0]===b[0]&&a[1]===b[1]&&(a[2]||'')===(b[2]||'');}
+
+  /* ---- video clip tools (edit mode only, never saved) ---- */
+  function addTools(v){
+    var box=document.createElement('div');box.className='vt';
+    var lab=document.createElement('b');box.appendChild(lab);
+    var snd;function paint(){var r=range(v);lab.textContent='Shows '+fmt(parseFloat(r[0])||0)+' to '+(r[1]?fmt(parseFloat(r[1])):'end')+(r[2]==='on'?' · sound on':' · muted');if(snd)snd.textContent=r[2]==='on'?'Mute':'Sound on';v.muted=r[2]!=='on';}
+    function btn(t,fn){var b=document.createElement('button');b.type='button';b.textContent=t;b.addEventListener('click',function(ev){ev.preventDefault();fn();paint();box.classList.add('ed-changed');});box.appendChild(b);}
+    btn('Start here',function(){var t=v.currentTime||0;var en=parseFloat(v.getAttribute('data-end'));if(en>0&&t>=en)v.removeAttribute('data-end');v.setAttribute('data-start',t.toFixed(1));});
+    btn('End here',function(){var t=v.currentTime||0;var st=parseFloat(v.getAttribute('data-start'))||0;if(t<=st+0.3){say('Play past the start point first, then tap End here.');return;}v.setAttribute('data-end',t.toFixed(1));});
+    btn('Full video',function(){v.removeAttribute('data-start');v.removeAttribute('data-end');});
+    btn('Sound on',function(){if(v.getAttribute('data-sound')==='on')v.removeAttribute('data-sound');else v.setAttribute('data-sound','on');});
+    snd=box.lastChild;
+    paint();(v.closest('.vbox')||v).insertAdjacentElement('afterend',box);
+  }
+
+  function start(){
+    editing=true;document.body.classList.add('editing');
+    originals=els(document).map(function(el){el.setAttribute('data-ed','');el.setAttribute('contenteditable','true');el.setAttribute('spellcheck','true');return el.innerHTML;});
+    vOriginals=vids(document).map(function(v){v.pause();v.controls=true;addTools(v);return range(v);});
+    tog.hidden=true;save.hidden=false;cancel.hidden=false;
+    say('Click outlined text to change it. Under each video: play to a moment, tap Start here or End here, and choose Sound on or Mute.');
+  }
+  function stop(restore){
+    els(document).forEach(function(el,i){
+      if(restore&&originals[i]!==undefined)el.innerHTML=originals[i];
+      el.removeAttribute('contenteditable');el.removeAttribute('data-ed');el.removeAttribute('spellcheck');el.classList.remove('ed-changed');
+    });
+    vids(document).forEach(function(v,i){
+      if(restore&&vOriginals[i]){setRange(v,vOriginals[i]);}
+      v.controls=false;v.removeAttribute('controls');v.muted=true;
+    });
+    document.querySelectorAll('.vt').forEach(function(x){x.remove();});
+    editing=false;document.body.classList.remove('editing');
+    tog.hidden=false;save.hidden=true;cancel.hidden=true;say('');
+  }
+  function setRange(v,r){if(r[0])v.setAttribute('data-start',r[0]);else v.removeAttribute('data-start');if(r[1])v.setAttribute('data-end',r[1]);else v.removeAttribute('data-end');if(r[2])v.setAttribute('data-sound',r[2]);else v.removeAttribute('data-sound');}
+
+  document.addEventListener('paste',function(e){
+    if(!editing||!e.target.closest||!e.target.closest('[data-ed]'))return;
+    e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData('text/plain');
+    document.execCommand('insertText',false,t);
+  },true);
+  document.addEventListener('input',function(e){
+    var el=e.target.closest&&e.target.closest('[data-ed]');if(el)el.classList.add('ed-changed');
+  });
+  document.addEventListener('click',function(e){
+    if(!editing)return;var a=e.target.closest&&e.target.closest('a,.zoom');
+    if(a&&!a.closest('#edBar')){e.preventDefault();e.stopPropagation();}
+  },true);
+
+  /* collect what the viewer changed, by position */
+  function collect(){
+    var t={},v={};
+    els(document).forEach(function(el,i){var h=cleanHTML(el);if(h!==originals[i])t[i]=h;});
+    vids(document).forEach(function(x,i){var r=range(x);if(!same(r,vOriginals[i]))v[i]=r;});
+    return {t:t,v:v};
+  }
+  function applyTo(root,ch){
+    var n=0,te=els(root),ve=vids(root);
+    Object.keys(ch.t).forEach(function(i){if(te[i]&&te[i].innerHTML!==ch.t[i]){te[i].innerHTML=ch.t[i];n++;}});
+    Object.keys(ch.v).forEach(function(i){if(ve[i]&&!same(range(ve[i]),ch.v[i])){setRange(ve[i],ch.v[i]);n++;}});
+    return n;
+  }
+
+  tog.addEventListener('click',start);
+  cancel.addEventListener('click',function(){ss(function(){sessionStorage.removeItem(STASH);});stop(true);});
+  save.addEventListener('click',async function(){
+    var tpl=document.getElementById('tpl');
+    if(!tpl||!art){say('Saving is not available in this view. Open the page in claude.ai while signed in.');return;}
+    var ch=collect();
+    if(!Object.keys(ch.t).length&&!Object.keys(ch.v).length){stop(false);say('No changes to save.');return;}
+    var core=decode(tpl.textContent.trim());
+    var parsed=new DOMParser().parseFromString('<!doctype html><html><head></head><body>'+core+'</body></html>','text/html');
+    if(els(parsed).length!==els(document).length||vids(parsed).length!==vids(document).length){say('The page layout changed since it loaded. Reload and try again.');return;}
+    applyTo(parsed,ch);
+    var old=parsed.getElementById('tpl');if(old)old.remove();
+    parsed.querySelectorAll('.vt').forEach(function(x){x.remove();});
+    parsed.querySelectorAll('video').forEach(function(x){x.removeAttribute('controls');});
+    var newCore=parsed.body.innerHTML;
+    var reset=(document.head.querySelector('style')||{}).textContent||':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}';
+    var html='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'+newCore+'<script id="tpl" type="text/plain">'+encode(newCore)+'<\/script></body></html>';
+    // keep the edits safe across the reload a save or a conflict causes
+    ss(function(){sessionStorage.setItem(STASH,JSON.stringify(ch));});
+    save.disabled=true;cancel.disabled=true;say('Saving…');
+    function fail(err){
+      save.disabled=false;cancel.disabled=false;var c=err&&err.code;
+      if(c==='conflict')say('A newer version exists. The page is reloading; your changes will come back so you can save again.');
+      else if(c==='not_writer'||c==='not_granted'||c==='not_declared'||c==='consent_required'||c==='capability_disabled'||c==='capability_removed'){ss(function(){sessionStorage.removeItem(STASH);});say('This view is read-only. Open the page in claude.ai while signed in to edit.');}
+      else if(c==='too_large')say('The page is too large to save.');
+      else if(c==='rate_limited')say('Saving too often. Wait a moment and try again.');
+      else say('Could not save just now. Try again in a minute.');
+    }
+    try{
+      await art.publish({'index.html':{content:html,contentType:'text/html'}});
+      tpl.textContent=encode(newCore);ss(function(){sessionStorage.removeItem(STASH);});
+      stop(false);save.disabled=false;cancel.disabled=false;say('Saved. Click Edit page to make more changes.');
+    }catch(err){
+      var c=err&&err.code;
+      if(c==='capability_disabled'||c==='capability_removed'||c==='invalid_content'||c==='transform_error'||c==='read_only_path'||err instanceof TypeError){
+        // a publicly shared page cannot save in place: publish the whole page; this view reloads
+        try{await art.publish(html);say('Saved. Reloading…');}catch(e2){fail(e2);}
+      }else fail(err);
+    }
+  });
+
+  /* after a reload: bring back changes that did not land, or clear them if they did */
+  function restore(){
+    var raw=ss(function(){return sessionStorage.getItem(STASH);});if(!raw)return;
+    var ch=ss(function(){return JSON.parse(raw);});if(!ch||!ch.t||!ch.v){ss(function(){sessionStorage.removeItem(STASH);});return;}
+    // compare against the page as loaded
+    var pending=0,te=els(document),ve=vids(document);
+    Object.keys(ch.t).forEach(function(i){if(te[i]&&cleanHTML(te[i])!==ch.t[i])pending++;});
+    Object.keys(ch.v).forEach(function(i){if(ve[i]&&!same(range(ve[i]),ch.v[i]))pending++;});
+    if(!pending){ss(function(){sessionStorage.removeItem(STASH);});say('Saved.');setTimeout(function(){if(!editing)say('');},4000);return;}
+    start();applyTo(document,ch);
+    els(document).forEach(function(el,i){if(ch.t[i]!==undefined)el.classList.add('ed-changed');});
+    document.querySelectorAll('.vt').forEach(function(x){x.remove();});vids(document).forEach(addTools);
+    say('Your unsaved changes are back. Check them and click Save changes.');
+  }
+
+  function show(){bar.hidden=false;restore();}
+  if(location.hash==='#edit')bar.hidden=false;
+  if(!window.claude||!window.claude.use){if(!bar.hidden)say('Editing works only inside claude.ai.');return;}
+  Promise.all([window.claude.use('artifact'),window.claude.use('user')]).then(async function(r){
+    art=r[0];var user=r[1];
+    var ok=false;
+    if(user){
+      ok=(await user.canEdit())||(await user.isOwner());
+      if(!ok){var c=await user.can('files.write');ok=c===true;}
+    }
+    if(ok||location.hash==='#edit')show();
+    if(!art&&!bar.hidden)say('Saving is not available in this view. Open the page in claude.ai while signed in.');
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>
